@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.IO;
 using Microsoft.Win32;
+using SunriseSunsetWallpaperDesktopChanger.SunriseSunset;
 
 namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
 {
@@ -42,7 +43,15 @@ namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
                 0, 
                 pathOfWallpaper, 
                 SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+        }
 
+        public static bool checkIfWallpaperShouldBeChanged(DateTime currentTime, DateTime actionTime)
+        {
+            if (currentTime >= actionTime)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
