@@ -5,10 +5,13 @@
         public string currentWallpaper { get; set; }
         public string newWallpaper { get; set; }
 
-        public Wallpapers(string currentWallpaper, string newWallpaper)
+        public DateTime timeWallpaperChanged { get; set; }
+
+        public Wallpapers(string currentWallpaper, string newWallpaper, DateTime timeWallpaperChanged)
         {
             this.currentWallpaper = currentWallpaper;
             this.newWallpaper = newWallpaper;
+            this.timeWallpaperChanged = timeWallpaperChanged;
         }
     }
 }

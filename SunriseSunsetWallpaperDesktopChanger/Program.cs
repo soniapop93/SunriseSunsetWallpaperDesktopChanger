@@ -1,6 +1,7 @@
 ﻿using SunriseSunsetWallpaperDesktopChanger.IP;
 using SunriseSunsetWallpaperDesktopChanger.SunriseSunset;
 using SunriseSunsetWallpaperDesktopChanger.Utilities;
+using SunriseSunsetWallpaperDesktopChanger.Wallpaper;
 
 public class Program
 {
@@ -36,19 +37,27 @@ public class Program
             {
                 DateTime lastTimeRequest = new DateTime();
 
+                SunriseSunsetInformation sunriseSunsetInformation = new SunriseSunsetInformation();
+
                 /* Check if the last time it made the request to get the 
                  * information from the API, is the day before the current day
                  */
                 if (lastTimeRequest < DateTime.Now.Date)
                 {
                     string responseSunriseSunsetAPI = GetInfoFromRequest.getInfoFromAPI(endpoint);
-                    SunriseSunsetInformation sunriseSunsetInformation = GetInfoFromRequest.parseInfoFromAPI(responseSunriseSunsetAPI);
+                    sunriseSunsetInformation = GetInfoFromRequest.parseInfoFromAPI(responseSunriseSunsetAPI);
                     lastTimeRequest = DateTime.Now.Date;
                 }
 
-                // TODO: implement to change the time and change the wallpapers
+                
+                bool check_dusk = WallpaperHandler.checkIfWallpaperShouldBeChanged(DateTime.Now, DateTime.Parse(sunriseSunsetInformation.dusk));
+                if (check_dusk)
+                {
+                    // TODO: implement to change the time and change the wallpaper with dusk
 
 
+
+                }
             }
             
 

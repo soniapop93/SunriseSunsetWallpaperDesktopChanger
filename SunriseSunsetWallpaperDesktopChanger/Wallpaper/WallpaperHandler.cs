@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using Microsoft.Win32;
 using SunriseSunsetWallpaperDesktopChanger.SunriseSunset;
+using System.Globalization;
 
 namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
 {
@@ -52,6 +53,21 @@ namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
                 return true;
             }
             return false;
+        }
+
+        public static string getPhoto(string actionType)
+        {
+            string path = @"C:\Users\" + System.Environment.UserName + @"\Documents\SunriseSunsetWallpaperDesktopChanger\SunriseSunsetWallpaperDesktopChanger\Wallpapers";
+
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            actionType = textInfo.ToTitleCase(actionType);
+
+            List<string> filesList = Directory.GetFiles(path + "\\" + actionType, "*.jpg", SearchOption.AllDirectories).ToList();
+
+            Random rnd = new Random();
+            string filePath = filesList[rnd.Next(filesList.Count)];
+
+            return filePath;
         }
     }
 }

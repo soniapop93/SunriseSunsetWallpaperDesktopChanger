@@ -11,4 +11,11 @@
     <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Wallpapers\Dusk\" />
+    <Folder Include="Wallpapers\Dawn\" />
+    <Folder Include="Wallpapers\Sunset\" />
+    <Folder Include="Wallpapers\Sunrise\" />
+  </ItemGroup>
+
 </Project>
