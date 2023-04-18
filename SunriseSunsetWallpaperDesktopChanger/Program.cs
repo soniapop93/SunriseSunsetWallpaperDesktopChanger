@@ -31,7 +31,8 @@ public class Program
             CoordinatesFromIP informationFromIP = GetCoordinatesFromIP.parseInfoFromIPRequest(responseIP);
 
             string endpoint = String.Format("https://api.sunrisesunset.io/json?lat={0}&lng={1}&timezone=UTC&date=today", informationFromIP.lat, informationFromIP.lat);
-            
+
+            string currentWallpaper = WallpaperHandler.getCurrentWallpaper();
 
             while (true) 
             {
@@ -48,15 +49,30 @@ public class Program
                     sunriseSunsetInformation = GetInfoFromRequest.parseInfoFromAPI(responseSunriseSunsetAPI);
                     lastTimeRequest = DateTime.Now.Date;
                 }
-
                 
-                bool check_dusk = WallpaperHandler.checkIfWallpaperShouldBeChanged(DateTime.Now, DateTime.Parse(sunriseSunsetInformation.dusk));
-                if (check_dusk)
+                if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.dawn)) && 
+                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunrise)))
                 {
                     // TODO: implement to change the time and change the wallpaper with dusk
+                    string wallpaperPath = WallpaperHandler.getPhoto("Dawn");
+                    
 
+                }
+                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.sunrise)) &&
+                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunrise).AddMinutes(15)))
+                {
+                    string wallpaperPath = WallpaperHandler.getPhoto("Sunrise");
+                }
 
-
+                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.dusk)) &&
+                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunset)))
+                {
+                    string wallpaperPath = WallpaperHandler.getPhoto("Dusk");
+                }
+                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.sunset)) &&
+                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunset).AddMinutes(15)))
+                {
+                    string wallpaperPath = WallpaperHandler.getPhoto("Sunset");
                 }
             }
             

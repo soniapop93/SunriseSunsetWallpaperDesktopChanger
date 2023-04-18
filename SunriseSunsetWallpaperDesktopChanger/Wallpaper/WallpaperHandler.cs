@@ -20,9 +20,9 @@ namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
         private static readonly UInt32 SPIF_UPDATEINIFILE = 0x01;
         private static readonly UInt32 SPIF_SENDWININICHANGE = 0x02;
 
-        private RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
+        private static RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
 
-        public string getCurrentWallpaper()
+        public static string getCurrentWallpaper()
         {
             string pathCurrentWallpaper = "";
 
