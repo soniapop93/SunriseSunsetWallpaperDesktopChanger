@@ -39,7 +39,7 @@ public class Program
             SunriseSunsetInformation sunriseSunsetInformation = new SunriseSunsetInformation();
 
             int timesleepDefaultValue = 5000;
-            int minutesDefaultValue = 1;
+            int minutesDefaultValue = 15;
 
             while (true)
             {
