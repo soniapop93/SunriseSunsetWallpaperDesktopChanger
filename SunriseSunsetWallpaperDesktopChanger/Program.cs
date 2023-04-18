@@ -1,6 +1,5 @@
 ﻿using SunriseSunsetWallpaperDesktopChanger.IP;
 using SunriseSunsetWallpaperDesktopChanger.SunriseSunset;
-using SunriseSunsetWallpaperDesktopChanger.Utilities;
 using SunriseSunsetWallpaperDesktopChanger.Wallpaper;
 
 public class Program
@@ -31,53 +30,97 @@ public class Program
             CoordinatesFromIP informationFromIP = GetCoordinatesFromIP.parseInfoFromIPRequest(responseIP);
 
             string endpoint = String.Format("https://api.sunrisesunset.io/json?lat={0}&lng={1}&timezone=UTC&date=today", informationFromIP.lat, informationFromIP.lat);
-
+            
             string currentWallpaper = WallpaperHandler.getCurrentWallpaper();
+            Console.WriteLine(String.Format("Current wallpaper path: {0}", currentWallpaper));
 
-            while (true) 
+            DateTime lastTimeRequest = DateTime.UtcNow.Date.AddDays(-1);
+
+            SunriseSunsetInformation sunriseSunsetInformation = new SunriseSunsetInformation();
+
+            int timesleepDefaultValue = 5000;
+            int minutesDefaultValue = 1;
+
+            while (true)
             {
-                DateTime lastTimeRequest = new DateTime();
+                try
+                {
+                    /* Check if the last time it made the request to get the 
+                    * information from the API, is the day before the current day
+                    */
+                    if (lastTimeRequest < DateTime.UtcNow.Date)
+                    {
+                        string responseSunriseSunsetAPI = GetInfoFromRequest.getInfoFromAPI(endpoint);
+                        sunriseSunsetInformation = GetInfoFromRequest.parseInfoFromAPI(responseSunriseSunsetAPI);
+                        lastTimeRequest = DateTime.UtcNow.Date;
+                    }
 
-                SunriseSunsetInformation sunriseSunsetInformation = new SunriseSunsetInformation();
+                    if ((DateTime.UtcNow >= DateTime.Parse(sunriseSunsetInformation.dawn)) &&
+                        (DateTime.UtcNow < DateTime.Parse(sunriseSunsetInformation.sunrise)))
+                    {
+                        string wallpaperPath = WallpaperHandler.getPhoto("Dawn");
+                        WallpaperHandler.changeWallpaper(wallpaperPath);
+                        Console.WriteLine(String.Format("Dawn wallpaper path changed: {0}", wallpaperPath));
 
-                /* Check if the last time it made the request to get the 
-                 * information from the API, is the day before the current day
-                 */
-                if (lastTimeRequest < DateTime.Now.Date)
-                {
-                    string responseSunriseSunsetAPI = GetInfoFromRequest.getInfoFromAPI(endpoint);
-                    sunriseSunsetInformation = GetInfoFromRequest.parseInfoFromAPI(responseSunriseSunsetAPI);
-                    lastTimeRequest = DateTime.Now.Date;
-                }
-                
-                if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.dawn)) && 
-                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunrise)))
-                {
-                    // TODO: implement to change the time and change the wallpaper with dusk
-                    string wallpaperPath = WallpaperHandler.getPhoto("Dawn");
-                    
+                        // Sunrise value - Dawn value
+                        int timesleepValue = (int)(DateTime.Parse(sunriseSunsetInformation.sunrise) - DateTime.Parse(sunriseSunsetInformation.dawn)).TotalMilliseconds;
 
-                }
-                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.sunrise)) &&
-                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunrise).AddMinutes(15)))
-                {
-                    string wallpaperPath = WallpaperHandler.getPhoto("Sunrise");
-                }
+                        // Time sleep - default value until changing the wallpaper
+                        Thread.Sleep(timesleepValue - timesleepDefaultValue);
 
-                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.dusk)) &&
-                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunset)))
-                {
-                    string wallpaperPath = WallpaperHandler.getPhoto("Dusk");
+                    }
+                    else if ((DateTime.UtcNow >= DateTime.Parse(sunriseSunsetInformation.sunrise)) &&
+                        (DateTime.UtcNow < DateTime.Parse(sunriseSunsetInformation.sunrise).AddMinutes(minutesDefaultValue)))
+                    {
+                        string wallpaperPath = WallpaperHandler.getPhoto("Sunrise");
+                        WallpaperHandler.changeWallpaper(wallpaperPath);
+                        Console.WriteLine(String.Format("Sunrise wallpaper path changed: {0}", wallpaperPath));
+
+                        // Sunrise value - minutesDefaultValue mins
+                        int timesleepValue = (int)(DateTime.Parse(sunriseSunsetInformation.sunrise).AddMinutes(minutesDefaultValue) - DateTime.Parse(sunriseSunsetInformation.sunrise)).TotalMilliseconds;
+
+                        // Time sleep - default value until changing back the wallpaper
+                        Thread.Sleep(timesleepValue - timesleepDefaultValue);
+                        WallpaperHandler.changeWallpaper(currentWallpaper);
+                        Console.WriteLine(String.Format("Default wallpaper path changed: {0}", currentWallpaper));
+                    }
+
+                    else if ((DateTime.UtcNow >= DateTime.Parse(sunriseSunsetInformation.sunset)) &&
+                        (DateTime.UtcNow < DateTime.Parse(sunriseSunsetInformation.dusk)))
+                    {
+                        string wallpaperPath = WallpaperHandler.getPhoto("Sunset");
+                        WallpaperHandler.changeWallpaper(wallpaperPath);
+                        Console.WriteLine(String.Format("Sunset wallpaper path changed: {0}", wallpaperPath));
+
+                        // Sunset value - dusk value
+                        int timesleepValue = (int)(DateTime.Parse(sunriseSunsetInformation.dusk) - DateTime.Parse(sunriseSunsetInformation.sunset)).TotalMilliseconds;
+
+                        // Time sleep - default value until changing back the wallpaper
+                        Thread.Sleep(timesleepValue - timesleepDefaultValue);
+                    }
+
+                    else if ((DateTime.UtcNow >= DateTime.Parse(sunriseSunsetInformation.dusk)) &&
+                        (DateTime.UtcNow < DateTime.Parse(sunriseSunsetInformation.dusk).AddMinutes(minutesDefaultValue)))
+                    {
+                        string wallpaperPath = WallpaperHandler.getPhoto("Dusk");
+                        WallpaperHandler.changeWallpaper(wallpaperPath);
+                        Console.WriteLine(String.Format("Dusk wallpaper path changed: {0}", wallpaperPath));
+
+                        // Sunset value - dusk value
+                        int timesleepValue = (int)(DateTime.Parse(sunriseSunsetInformation.sunset).AddMinutes(minutesDefaultValue) - DateTime.Parse(sunriseSunsetInformation.sunset)).TotalMilliseconds;
+
+                        // Time sleep - default value until changing the wallpaper
+                        Thread.Sleep(timesleepValue - timesleepDefaultValue);
+                        WallpaperHandler.changeWallpaper(currentWallpaper);
+                        Console.WriteLine(String.Format("Default wallpaper path changed: {0}", currentWallpaper));
+                    }
+                    Thread.Sleep(timesleepDefaultValue);
                 }
-                else if ((DateTime.Now >= DateTime.Parse(sunriseSunsetInformation.sunset)) &&
-                    (DateTime.Now < DateTime.Parse(sunriseSunsetInformation.sunset).AddMinutes(15)))
+                catch (Exception e)
                 {
-                    string wallpaperPath = WallpaperHandler.getPhoto("Sunset");
+                    Console.WriteLine("There was an exception in the while: {0} {1} {2} {3}", e.Message, "\n", e.Source, "\n", e.StackTrace);
                 }
             }
-            
-
-
         }
         catch (Exception e)
         {

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.IO;
+﻿using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using SunriseSunsetWallpaperDesktopChanger.SunriseSunset;
 using System.Globalization;
 
 namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
@@ -20,11 +17,12 @@ namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
         private static readonly UInt32 SPIF_UPDATEINIFILE = 0x01;
         private static readonly UInt32 SPIF_SENDWININICHANGE = 0x02;
 
-        private static RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
+        
 
         public static string getCurrentWallpaper()
         {
             string pathCurrentWallpaper = "";
+            RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", false);
 
             if (regKey != null)
             {
@@ -34,25 +32,18 @@ namespace SunriseSunsetWallpaperDesktopChanger.Wallpaper
             return pathCurrentWallpaper;
         }
 
-        public void changeWallpaper(string pathOfWallpaper)
+        public static void changeWallpaper(string pathOfWallpaper)
         {
-            regKey.SetValue(@"WallpaperStyle", 0.ToString());
-            regKey.SetValue(@"TileWallpaer", 0.ToString());
+            RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop", true);
+
+            regKey.SetValue(@"WallpaperStyle", "2"); // set it as Stretched
+            regKey.SetValue(@"TileWallpaer", "0");
 
             SystemParametersInfo(
-                SPI_SETDESKWALLPAPER, 
-                0, 
-                pathOfWallpaper, 
+                SPI_SETDESKWALLPAPER,
+                0,
+                pathOfWallpaper,
                 SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
-        }
-
-        public static bool checkIfWallpaperShouldBeChanged(DateTime currentTime, DateTime actionTime)
-        {
-            if (currentTime >= actionTime)
-            {
-                return true;
-            }
-            return false;
         }
 
         public static string getPhoto(string actionType)
